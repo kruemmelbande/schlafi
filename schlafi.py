@@ -5,18 +5,33 @@ client=discord.Client()
 # load settings
 def loadsettings():
     global settings, token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
-    with open('settings.json') as fp:
-        settings = json.load(fp)
-        token = settings["token"]
-        prefix = settings["prefix"]
-        default_quotes = settings["default_quotes"]
-        bot_channel = settings["bot-channel"]
-        update_pending = settings["update-pending"]
-        default_wake = settings["default-wake"]
-        wake_channel = settings["wake-channel"]
-        print("The bot has been started at "+str(datetime.datetime.now()))
-        print("--settings--")
-        print(settings)
+    try:
+        with open('settings.json') as fp:
+            settings = json.load(fp)
+            token = settings["token"]
+            prefix = settings["prefix"]
+            default_quotes = settings["default_quotes"]
+            bot_channel = settings["bot-channel"]
+            update_pending = settings["update-pending"]
+            default_wake = settings["default-wake"]
+            wake_channel = settings["wake-channel"]
+            print("The bot has been started at "+str(datetime.datetime.now()))
+            print("--settings--")
+            print(settings)
+    except Exception:
+            with open('defaults.json') as fp:
+                settings = json.load(fp)
+                token = settings["token"]
+                prefix = settings["prefix"]
+                default_quotes = settings["default_quotes"]
+                bot_channel = settings["bot-channel"]
+                update_pending = settings["update-pending"]
+                default_wake = settings["default-wake"]
+                wake_channel = settings["wake-channel"]
+                print("The bot has been started at "+str(datetime.datetime.now()))
+                print("--settings--")
+                print(settings)
+
 def savesettings():
     global settings
     with open('settings.json', 'w') as fp:
