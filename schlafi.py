@@ -39,22 +39,8 @@ def savesettings():
         print("settings.json saved")
         print(settings)
 sendnow=0
-try:
-    loadsettings()
-except Exception:
-    try:
-        from reset import resetsettings
-        resetsettings()
-        loadsettings()
-    except Exception:
-        #set print color to red
-        print("\033[91m")
-        print("A fatal error has prevednted schlafi from starting.")
-        print("failed to load or create settings.json (do you have write permissions?/are all the files in the right place?)")
-        print("\033[0m")
-        print("exiting in 5 seconds...")
-        time.sleep(5)
-        exit()
+loadsettings()
+
 sendtime=default_wake.split(":")
 
 def command(target,message):
