@@ -3,34 +3,28 @@ import discord, json, random, time, datetime, os, asyncio
 #test uwu
 client=discord.Client()
 # load settings
+def getsettings(fp):
+    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
+    settings = json.load(fp)
+    token = settings["token"]
+    prefix = settings["prefix"]
+    default_quotes = settings["default_quotes"]
+    bot_channel = settings["bot-channel"]
+    update_pending = settings["update-pending"]
+    default_wake = settings["default-wake"]
+    wake_channel = settings["wake-channel"]
+    print("The bot has been started at "+str(datetime.datetime.now()))
+    print("--settings--")
+    print(settings)
 def loadsettings():
     global settings, token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
     try:
         with open('settings.json') as fp:
-            settings = json.load(fp)
-            token = settings["token"]
-            prefix = settings["prefix"]
-            default_quotes = settings["default_quotes"]
-            bot_channel = settings["bot-channel"]
-            update_pending = settings["update-pending"]
-            default_wake = settings["default-wake"]
-            wake_channel = settings["wake-channel"]
-            print("The bot has been started at "+str(datetime.datetime.now()))
-            print("--settings--")
-            print(settings)
+            getsettings(fp)
     except Exception:
-            with open('defaults.json') as fp:
-                settings = json.load(fp)
-                token = settings["token"]
-                prefix = settings["prefix"]
-                default_quotes = settings["default_quotes"]
-                bot_channel = settings["bot-channel"]
-                update_pending = settings["update-pending"]
-                default_wake = settings["default-wake"]
-                wake_channel = settings["wake-channel"]
-                print("The bot has been started at "+str(datetime.datetime.now()))
-                print("--settings--")
-                print(settings)
+        with open('defaults.json') as fp:
+            getsettings(fp)
+
 
 def savesettings():
     global settings
@@ -49,10 +43,11 @@ def command(target,message):
         #cut off the prefix and target
         if len(message.content)>len(prefix+target):
             postcommand=message.content[len(prefix+target):]
+            if postcommand[0]==" " and len(postcommand)>1:
+                postcommand=postcommand[1:]
         else:
             postcommand=""
-        if postcommand[0]==" " and len(postcommand)>1:
-            postcommand=postcommand[1:]
+
         return 1
     else:
         return 0
@@ -60,7 +55,7 @@ def command(target,message):
 
 async def quotesend():#this is the function which sends the quote at the right time
     await client.wait_until_ready()
-    print("arming the nugget!")
+    print("starting quotesend")
     await asyncio.sleep(10)
     global quote, sendtime,sendnow
     while not client.is_closed():
@@ -86,7 +81,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    global sendtime
+    global sendtime, cancel
     if message.author==client.user:
         return
     msg=message.content
@@ -94,17 +89,47 @@ async def on_message(message):
         global quote
         quote=postcommand
         await botchan.send(message.content+" | Quote set to: "+quote)
-        await message.delete()
+#        await message.delete()
     if command("settime",message):
         global sendtime
         sendtime=postcommand.split(":")
         await botchan.send(message.content+" | Time set to: "+str(sendtime[0])+":"+str(sendtime[1]))
-        await message.delete()
+#        await message.delete()
         settings["default-wake"]=str(sendtime[0])+":"+str(sendtime[1])
         savesettings()
     if command("send",message):
         sendnow=1
         await message.delete()
+    if command("exit",message):
+        if int(bot_channel)==int(message.channel.id):
+            if postcommand.startswith("yes im sure"):
+                await botchan.send("Shutting down...")
+                await client.logout()
+                await client.close()
+                exit()
+            else:
+                await botchan.send("Are you sure you want to exit? Type '!exit yes im sure' to confirm.")
+#                await message.delete()
+    if command("reminder",message):
 
+        cancel=0
+        tmp=postcommand.split(":")
+        if len(tmp)==3:
+            await message.channel.send("Reminder set for "+str(tmp[0])+":"+str(tmp[1])+"\nMessage: "+tmp[2])
+            now=datetime.datetime.now()
+            while now.hour!=int(tmp[0]) or now.minute!=int(tmp[1]):
+                now=datetime.datetime.now()
+                await asyncio.sleep(5)
+                if cancel==1:
+                    break
+            if cancel==0:
+                await wakechan.send(tmp[2])
+        else:
+            await message.channel.send("Invalid format. Please use 'hh:mm:reminder' and do not use ':' in the reminder.")
+        #await message.delete()
+    if command("cancel",message):
+
+        cancel=1
+        await message.channel.send("Reminder cancelled.")
 client.loop.create_task(quotesend())
 client.run(token)
