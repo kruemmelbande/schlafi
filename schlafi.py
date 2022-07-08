@@ -5,7 +5,7 @@ client=discord.Client()
 # load settings
 
 def getsettings(fp):
-    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
+    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, settings
     settings = json.load(fp)
     token = settings["token"]
     prefix = settings["prefix"]
@@ -73,7 +73,7 @@ async def quotesend():#this is the function which sends the quote at the right t
             print("quote sent")
             await asyncio.sleep(61)
         else:
-            await asyncio.sleep(3)
+            await asyncio.sleep(15)
             print(now.hour,"|",now.minute,"|", now.second, "\t|", sendtime[0],"|",sendtime[1])
 
 
@@ -105,7 +105,9 @@ async def on_message(message):
     if command("settime",message):
         global sendtime
         sendtime=postcommand.split(":")
-        await botchan.send(message.content+" | Time set to: "+str(sendtime[0])+":"+str(sendtime[1]))
+        sendtime[0]=int(sendtime[0])
+        sendtime[1]=int(sendtime[1])
+        await botchan.send(message.content+" | Time set to: "+str(sendtime[0]).zfill(2)+":"+str(sendtime[1]).zfill(2))
 #        await message.delete()
         settings["default-wake"]=str(sendtime[0])+":"+str(sendtime[1])
         savesettings()
