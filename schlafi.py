@@ -17,6 +17,25 @@ def getsettings(fp):
     print("The bot has been started at "+str(datetime.datetime.now()))
     print("--settings--")
     print(settings)
+
+def command(target,message,bot=0):
+    global postcommand
+    if message.content.startswith(prefix+target):
+        #cut off the prefix and target
+        if len(message.content)>len(prefix+target):
+            postcommand=message.content[len(prefix+target):]
+            if postcommand[0]==" " and len(postcommand)>1:
+                postcommand=postcommand[1:]
+        else:
+            postcommand=""
+
+        if bot:#if the command is supposed to be only accesed in the bot channel
+            return message.channel.id==bot_channel
+        return 1
+
+    else:
+        return 0
+
 def loadsettings():
     global settings, token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
     try:
@@ -38,23 +57,6 @@ loadsettings()
 
 sendtime=default_wake.split(":")
 
-def command(target,message,bot=0):
-    global postcommand
-    if message.content.startswith(prefix+target):
-        #cut off the prefix and target
-        if len(message.content)>len(prefix+target):
-            postcommand=message.content[len(prefix+target):]
-            if postcommand[0]==" " and len(postcommand)>1:
-                postcommand=postcommand[1:]
-        else:
-            postcommand=""
-
-        if bot:#if the command is supposed to be only accesed in the bot channel
-            return message.channel.id==bot_channel
-        return 1
-
-    else:
-        return 0
 
 
 async def quotesend():#this is the function which sends the quote at the right time
@@ -91,8 +93,8 @@ async def on_message(message):
     msg=message.content
     if command("help",message):
         out="```"
-        for command in commands:
-            out+=prefix+command+"\n"
+        for comms in commands:
+            out+=prefix+comms+"\n"
         out+="```"
         await message.channel.send(out)
     if command("quote",message):
