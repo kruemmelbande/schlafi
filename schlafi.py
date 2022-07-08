@@ -78,13 +78,19 @@ async def on_ready():
     wakechan=client.get_channel(id=int(wake_channel))
     await botchan.send("Bot logged in!")
     
-
+commands=["help","quote","settime","send","exit","reminder","cancel"]
 @client.event
 async def on_message(message):
     global sendtime, cancel
     if message.author==client.user:
         return
     msg=message.content
+    if command("help",message):
+        out="```"
+        for command in commands:
+            out+=prefix+command+"\n"
+        out+="```"
+        await message.channel.send(out)
     if command("quote",message):
         global quote
         quote=postcommand
