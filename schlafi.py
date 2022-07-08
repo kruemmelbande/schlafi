@@ -3,6 +3,7 @@ import discord, json, random, time, datetime, os, asyncio
 #test uwu
 client=discord.Client()
 # load settings
+
 def getsettings(fp):
     global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
     settings = json.load(fp)
@@ -37,7 +38,7 @@ loadsettings()
 
 sendtime=default_wake.split(":")
 
-def command(target,message):
+def command(target,message,bot=0):
     global postcommand
     if message.content.startswith(prefix+target):
         #cut off the prefix and target
@@ -48,7 +49,10 @@ def command(target,message):
         else:
             postcommand=""
 
+        if bot:#if the command is supposed to be only accesed in the bot channel
+            return message.channel.id==bot_channel
         return 1
+
     else:
         return 0
 
@@ -137,5 +141,12 @@ async def on_message(message):
 
         cancel=1
         await message.channel.send("Reminder cancelled.")
+    if command("reboot",message,1):
+        await botchan.send("Rebooting...")
+        os.system("sudo reboot")#only works on linux, if no sudo password is set. This is intended for the raspberry pi, which by default has no password to access sudo.
+    if command("bash",message,1):#BIG DANGEROUS, USE AT YOUR OWN RISK
+        await botchan.send("Bash command: "+postcommand)
+        os.system(postcommand)
+        await botchan.send("Command executed.")
 client.loop.create_task(quotesend())
 client.run(token)
