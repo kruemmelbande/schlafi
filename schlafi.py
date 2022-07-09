@@ -1,5 +1,5 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
-import discord, json, random, time, datetime, os, asyncio
+import discord, json, random, time, datetime, os, asyncio,requests
 #test uwu
 client=discord.Client()
 # load settings
@@ -61,7 +61,6 @@ sendtime=default_wake.split(":")
 
 async def quotesend():#this is the function which sends the quote at the right time
     await client.wait_until_ready()
-    print("starting quotesend")
     await asyncio.sleep(10)
     global quote, sendtime,sendnow
     while not client.is_closed():
@@ -87,7 +86,7 @@ async def on_ready():
 commands=["help","quote","settime","send","exit","reminder","cancel"]
 @client.event
 async def on_message(message):
-    global sendtime, cancel
+    global settings,sendtime, cancel
     if message.author==client.user:
         return
     msg=message.content
@@ -152,5 +151,15 @@ async def on_message(message):
         await botchan.send("Bash command: "+postcommand)
         os.system(postcommand)
         await botchan.send("Command executed.")
+    if command("backup",message,1):#sends the settings.json file to the bot channel
+        await botchan.send("Sending backup...")
+        savesettings()
+        await botchan.send(file=discord.File("settings.json"))
+    if command("restore",message,1):#restores the settings.json file from the bot channel
+        await botchan.send("Restoring backup...")
+        settings=requests.get(message.attachments[0].url).json()
+        savesettings()
+        loadsettings()
+        await botchan.send("Backup restored.")
 client.loop.create_task(quotesend())
 client.run(token)
