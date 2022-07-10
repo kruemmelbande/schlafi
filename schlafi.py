@@ -1,5 +1,5 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
-import discord, json, random, time, datetime, os, asyncio,requests
+import discord, json, random, time, datetime, os, asyncio,requests, psutil
 #test uwu
 client=discord.Client()
 # load settings
@@ -185,6 +185,14 @@ async def on_message(message):
             savesettings()
         else:
             await botchan.send("Invalid index.")
+    if command("gethwinfo",message,1):
+        #get the hardware info of the raspberry pi
+        out="```"
+        out+="CPU: "+str(psutil.cpu_percent())+"%\n"
+        out+="RAM: "+str(psutil.virtual_memory().percent)+"%\n"
+        out+="Disk: "+str(psutil.disk_usage("/").percent)+"%\n"
+        out+="```"
+        await botchan.send(out)
 
 
 
