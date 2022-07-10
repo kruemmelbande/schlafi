@@ -1,5 +1,6 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
 import discord, json, random, time, datetime, os, asyncio,requests, psutil
+from gpiozero import CPUTemperature
 #test uwu
 client=discord.Client()
 # load settings
@@ -188,12 +189,9 @@ async def on_message(message):
     if command("gethwinfo",message,1):
         #get the hardware info of the raspberry pi
         out="```"
-        out+="CPU: "+str(psutil.cpu_percent())+"%\n"
-        out+="RAM: "+str(psutil.virtual_memory().percent)+"%\n"
-        out+="Disk: "+str(psutil.disk_usage("/").percent)+"%\n"
-        out+="CPU Temp: "+str(psutil.sensors_temperatures()['cpu-thermal'][0].current)+"°C\n"
-        out+="CPU Freq: "+str(psutil.cpu_freq().current)+"MHz\n"
-        out+="```"
+        out+="CPU Temp: "+CPUTemperature.temperature()+"C\n"
+        out+="CPU Usage: "+str(psutil.cpu_percent())+"%\n"
+        out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
         await botchan.send(out)
 
 
