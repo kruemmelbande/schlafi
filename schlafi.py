@@ -69,6 +69,7 @@ async def quotesend():#this is the function which sends the quote at the right t
             sendnow=0
             print("sending quote")
             await wakechan.send(str( quote))
+            quote=random.choice(default_quotes)
             print("quote sent")
             await asyncio.sleep(61)
         else:
@@ -86,7 +87,7 @@ async def on_ready():
 commands=["help","quote","settime","send","exit","reminder","cancel"]
 @client.event
 async def on_message(message):
-    global settings,sendtime, cancel
+    global settings,sendtime, cancel,default_quotes
     if message.author==client.user:
         return
     msg=message.content
@@ -96,7 +97,7 @@ async def on_message(message):
             out+=prefix+comms+"\n"
         out+="```"
         await message.channel.send(out)
-    if command("quote",message):
+    if command("quote",message,1):
         global quote
         quote=postcommand
         await botchan.send(message.content+" | Quote set to: "+quote)
@@ -161,5 +162,30 @@ async def on_message(message):
         savesettings()
         loadsettings()
         await botchan.send("Backup restored.")
+    if command("addquote",message,1):
+
+        default_quotes.append(postcommand)
+        await botchan.send("Quote added.")
+        savesettings()
+    if command("listquotes",message,1):
+
+        out="```"
+        n=0
+        for quote in default_quotes:
+            out+=str(n)+": "+quote+"\n"
+            n+=1
+        out+="```"
+        await botchan.send(out)
+    if command("removequote",message,1):
+        index=int(postcommand)
+        if index<len(default_quotes):
+            del default_quotes[index]
+            await botchan.send("Quote removed.")
+            savesettings()
+        else:
+            await botchan.send("Invalid index.")
+
+
+
 client.loop.create_task(quotesend())
 client.run(token)
