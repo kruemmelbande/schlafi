@@ -191,6 +191,8 @@ async def on_message(message):
         out+="CPU: "+str(psutil.cpu_percent())+"%\n"
         out+="RAM: "+str(psutil.virtual_memory().percent)+"%\n"
         out+="Disk: "+str(psutil.disk_usage("/").percent)+"%\n"
+        out+="CPU Temp: "+str(psutil.sensors_temperatures()['cpu-thermal'][0].current)+"°C\n"
+        out+="CPU Freq: "+str(psutil.cpu_freq().current)+"MHz\n"
         out+="```"
         await botchan.send(out)
 
