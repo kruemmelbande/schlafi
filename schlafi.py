@@ -189,7 +189,7 @@ async def on_message(message):
     if command("gethwinfo",message,1):
         #get the hardware info of the raspberry pi
         out="```"
-        out+="CPU Temp: "+CPUTemperature().temperature+"C\n"
+        out+="CPU Temp: "+str(round(CPUTemperature().temperature,2))+"C\n"
         out+="CPU Usage: "+str(psutil.cpu_percent())+"%\n"
         out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
         await botchan.send(out)
