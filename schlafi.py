@@ -63,6 +63,7 @@ async def quotesend():#this is the function which sends the quote at the right t
     await client.wait_until_ready()
     await asyncio.sleep(10)
     global quote, sendtime,sendnow
+    quote=random.choice(default_quotes)
     while not client.is_closed():
         now=datetime.datetime.now()
         if (now.hour==int(sendtime[0]) and now.minute==int(sendtime[1])) or sendnow==1:
