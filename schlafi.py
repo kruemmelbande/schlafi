@@ -75,7 +75,7 @@ async def quotesend():#this is the function which sends the quote at the right t
             print("quote sent")
             await asyncio.sleep(61)
         else:
-            await asyncio.sleep(15)
+            await asyncio.sleep(1)
             print(now.hour,"|",now.minute,"|", now.second, "\t|", sendtime[0],"|",sendtime[1],end="\r")
 
 
