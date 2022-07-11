@@ -187,9 +187,16 @@ async def on_message(message):
         else:
             await botchan.send("Invalid index.")
     if command("gethwinfo",message,1):
+        #get the average CPU load of the last 5 seconds
+        await botchan.send("Getting hardware info...")
+        load=[]
+        for i in range(10):
+            await asyncio.sleep(0.5)
+            load.append(CPUTemperature().temperature)
+        load=sum(load)/len(load)
         #get the hardware info of the raspberry pi
         out="```"
-        out+="CPU Temp: "+str(round(CPUTemperature().temperature,2))+"C\n"
+        out+="CPU Temp: "+str(round(load,2))+"C\n"
         out+="CPU Usage: "+str(psutil.cpu_percent())+"%\n"
         out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
         out+="```"
