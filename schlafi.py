@@ -86,7 +86,7 @@ async def on_ready():
     wakechan=client.get_channel(id=int(wake_channel))
     await botchan.send("Bot logged in!")
     
-commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo"]
+commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
 @client.event
 async def on_message(message):
     global settings,sendtime, cancel,default_quotes
