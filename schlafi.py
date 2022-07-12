@@ -205,7 +205,7 @@ async def on_message(message):
         notename=postcommand.split(" ")[0]
         settings["notes"][notename]=postcommand.split(" ")[1:]
         savesettings()
-        await botchan.send("Note added.")
+        await message.channel.send("Note added.")
     if command("removenote",message,0):
         notename=postcommand
         if notename == "*":
@@ -215,9 +215,9 @@ async def on_message(message):
         if notename in settings["notes"]:
             del settings["notes"][notename]
             savesettings()
-            await botchan.send("Note removed.")
+            await message.channel.send("Note removed.")
         else:
-            await botchan.send("Note not found.")
+            await message.channel.send("Note not found.")
 
     if command("getnote",message,0):
         notename=postcommand
@@ -226,9 +226,9 @@ async def on_message(message):
             for note in settings["notes"][notename]:
                 out+=note+"\n"
             out+="```"
-            await botchan.send(out)
+            await message.channel.send(out)
         else:
-            await botchan.send("Note not found.")
+            await message.channel.send("Note not found.")
 
 
 client.loop.create_task(quotesend())
