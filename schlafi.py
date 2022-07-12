@@ -201,12 +201,12 @@ async def on_message(message):
         out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
         out+="```"
         await botchan.send(out)
-    if command("addnote",message,1):
+    if command("addnote",message,0):
         notename=postcommand.split(" ")[0]
         settings["notes"][notename]=postcommand.split(" ")[1:]
         savesettings()
         await botchan.send("Note added.")
-    if command("removenote",message,1):
+    if command("removenote",message,0):
         notename=postcommand
         if notename == "*":
             settings["notes"]={}
@@ -219,7 +219,7 @@ async def on_message(message):
         else:
             await botchan.send("Note not found.")
 
-    if command("getnote",message,1):
+    if command("getnote",message,0):
         notename=postcommand
         if notename in settings["notes"]:
             out="```"
