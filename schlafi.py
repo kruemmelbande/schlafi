@@ -1,5 +1,10 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
-import discord, json, random, time, datetime, os, asyncio,requests, psutil
+import discord, json, random, time, datetime, os, asyncio,requests
+compmode=0
+try:
+    import psutil
+except:
+    compmode=1
 from gpiozero import CPUTemperature
 #test uwu
 client=discord.Client()
@@ -85,6 +90,8 @@ async def on_ready():
     botchan=client.get_channel(id=int(bot_channel))
     wakechan=client.get_channel(id=int(wake_channel))
     await botchan.send("Bot logged in!")
+    if compmode:
+        await botchan.send("Bot is running in compatability mode. Some commands may not work.")
     
 commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
 @client.event
@@ -187,20 +194,23 @@ async def on_message(message):
         else:
             await botchan.send("Invalid index.")
     if command("gethwinfo",message,1):
-        #get the average CPU load of the last 5 seconds
-        await botchan.send("Getting hardware info...")
-        load=[]
-        for i in range(10):
-            await asyncio.sleep(0.5)
-            load.append(CPUTemperature().temperature)
-        load=sum(load)/len(load)
-        #get the hardware info of the raspberry pi
-        out="```"
-        out+="CPU Temp: "+str(round(load,2))+"C\n"
-        out+="CPU Usage: "+str(psutil.cpu_percent())+"%\n"
-        out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
-        out+="```"
-        await botchan.send(out)
+        try:
+            #get the average CPU load of the last 5 seconds
+            await botchan.send("Getting hardware info...")
+            load=[]
+            for i in range(10):
+                await asyncio.sleep(0.5)
+                load.append(CPUTemperature().temperature)
+            load=sum(load)/len(load)
+            #get the hardware info of the raspberry pi
+            out="```"
+            out+="CPU Temp: "+str(round(load,2))+"C\n"
+            out+="CPU Usage: "+str(psutil.cpu_percent())+"%\n"
+            out+="RAM Usage: "+str(psutil.virtual_memory().percent)+"%\n"
+            out+="```"
+            await botchan.send(out)
+        except:
+            await botchan.send("Error getting hardware info.")
     if command("addnote",message,0):
         notename=postcommand.split(" ")[0]
         settings["notes"][notename]=postcommand.split(" ")[1:]
