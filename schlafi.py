@@ -51,18 +51,21 @@ def loadsettings():
     try:
         updatemode=0
         with open('settings.json') as fp:
-            try:
                 getsettings(fp)
-            except:
+    except:
+        try:
+            with open('settings.json') as fp:
                 updatemode=1
                 #get only token bot-channel and prefix
                 settings = json.load(fp)
                 token = settings["token"]
                 bot_channel = settings["bot-channel"]
                 prefix = settings["prefix"]
-    except Exception:
-        with open('defaults.json') as fp:
-            getsettings(fp)
+        except Exception:
+            with open('defaults.json') as fp:
+                print("!!!DEFAULTS LOADED!!!")
+                print("THIS WILL NOT WORK!")
+                getsettings(fp)
 
 
 def savesettings():
