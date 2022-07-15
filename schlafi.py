@@ -1,6 +1,7 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
 import discord, json, random, time, datetime, os, asyncio,requests
 compmode=0
+cversion=1
 try:
     import psutil
     from gpiozero import CPUTemperature
@@ -12,7 +13,7 @@ client=discord.Client()
 # load settings
 
 def getsettings(fp):
-    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, settings
+    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, settings, sversion, last_known_quote
     settings = json.load(fp)
     token = settings["token"]
     prefix = settings["prefix"]
@@ -21,6 +22,8 @@ def getsettings(fp):
     update_pending = settings["update-pending"]
     default_wake = settings["default-wake"]
     wake_channel = settings["wake-channel"]
+    sversion=settings["version"]
+    last_known_quote=settings["last-known-quote"]
     print("The bot has been started at "+str(datetime.datetime.now()))
     print("--settings--")
     print(settings)
@@ -54,23 +57,38 @@ def loadsettings():
 
 
 def savesettings():
-    global settings
+    global settings, quote
+    settings["last-known-quote"]=quote
     with open('settings.json', 'w') as fp:
         json.dump(settings, fp)
         print("settings.json saved")
-        print(settings)
+        #print(settings)
 sendnow=0
 loadsettings()
 
 sendtime=default_wake.split(":")
 
-
+@client.event
+async def on_ready():
+    global botchan, wakechan,bot_channel, wake_channel,sversion,quote,starttime
+    botchan=client.get_channel(id=int(bot_channel))
+    wakechan=client.get_channel(id=int(wake_channel))
+    await botchan.send("Bot logged in!")
+    starttime=datetime.datetime.now()
+    if compmode:
+        await botchan.send("Bot is running in compatability mode. Some commands may not work.")
+    if cversion!=sversion:
+        await botchan.send(f"The bot has been updated to version {cversion} from {sversion}! (in some cases the settings.json has to be recreated)")
+        settings["version"]=cversion
+    quote=last_known_quote
+    print("Bot logged in!")
+    savesettings()
 
 async def quotesend():#this is the function which sends the quote at the right time
     await client.wait_until_ready()
     await asyncio.sleep(10)
-    global quote, sendtime,sendnow
-    quote=random.choice(default_quotes)
+    global quote, sendtime,sendnow, last_known_quote
+
     while not client.is_closed():
         now=datetime.datetime.now()
         if (now.hour==int(sendtime[0]) and now.minute==int(sendtime[1])) or sendnow==1:
@@ -85,22 +103,13 @@ async def quotesend():#this is the function which sends the quote at the right t
             print(now.hour,"|",now.minute,"|", now.second, "\t|", sendtime[0],"|",sendtime[1],end="\r")
 
 
-@client.event
-async def on_ready():
-    global botchan, wakechan,bot_channel, wake_channel
-    botchan=client.get_channel(id=int(bot_channel))
-    wakechan=client.get_channel(id=int(wake_channel))
-    await botchan.send("Bot logged in!")
-    if compmode:
-        await botchan.send("Bot is running in compatability mode. Some commands may not work.")
-    
+
 commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
 @client.event
 async def on_message(message):
-    global settings,sendtime, cancel,default_quotes, sendnow
+    global settings,sendtime, cancel,default_quotes, sendnow,starttime
     if message.author==client.user:
         return
-    msg=message.content
     if command("help",message):
         out="```"
         for comms in commands:
@@ -240,7 +249,15 @@ async def on_message(message):
             await message.channel.send(out)
         else:
             await message.channel.send("Note not found.")
-
+    if command("info",message,1):
+        out="```"
+        uptime=datetime.datetime.now()-starttime
+        out+="Uptime: "+str(uptime.days)+" days, "+str(uptime.seconds//3600)+" hours, "+str(uptime.seconds//60%60)+" minutes, "+str(uptime.seconds%60)+" seconds\n"
+        out+="Bot version: "+str(cversion)+"\n"
+        out+="Bot channel: "+str(bot_channel)+"\n"
+        out+="Wake channel: "+str(wake_channel)+"\n"
+        out+="```"
+        await botchan.send(out)
 
 client.loop.create_task(quotesend())
 client.run(token)

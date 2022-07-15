@@ -1,1 +1,1 @@
-{"token": "token go here", "prefix": "!", "default_quotes": ["*something go here*"], "bot-channel": 1234, "wake-channel": 1234, "update-pending": false, "default-wake": "00:00", "notes": {}}
+{"token": "token go here", "prefix": "!", "default_quotes": ["*something go here*"], "bot-channel": 1234, "wake-channel": 1234, "update-pending": false, "default-wake": "00:00", "notes": {}, "last-known-quote": "Some quote", "version": 0}
