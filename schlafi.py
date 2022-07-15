@@ -138,7 +138,12 @@ async def on_message(message):
             savesettings()
             loadsettings()
             await botchan.send("Backup restored. Please restart the bot to exit update mode.")
-        return
+            return
+        if command("reboot",message,1):
+            await botchan.send("Rebooting...")
+            os.system("sudo reboot")
+            time.sleep(5)
+            print("How did I get here? (couldnt reboot)")
     if command("help",message):
         out="```"
         for comms in commands:
@@ -287,6 +292,6 @@ async def on_message(message):
         out+="Wake channel: "+str(wake_channel)+"\n"
         out+="```"
         await botchan.send(out)
-
-client.loop.create_task(quotesend())
+if not updatemode:
+    client.loop.create_task(quotesend())
 client.run(token)
