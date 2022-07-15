@@ -47,10 +47,19 @@ def command(target,message,bot=0):
         return 0
 
 def loadsettings():
-    global settings, token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel
+    global settings, token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, updatemode
     try:
+        updatemode=0
         with open('settings.json') as fp:
-            getsettings(fp)
+            try:
+                getsettings(fp)
+            except:
+                updatemode=1
+                #get only token bot-channel and prefix
+                settings = json.load(fp)
+                token = settings["token"]
+                bot_channel = settings["bot-channel"]
+                prefix = settings["prefix"]
     except Exception:
         with open('defaults.json') as fp:
             getsettings(fp)
@@ -70,19 +79,24 @@ sendtime=default_wake.split(":")
 
 @client.event
 async def on_ready():
-    global botchan, wakechan,bot_channel, wake_channel,sversion,quote,starttime
-    botchan=client.get_channel(id=int(bot_channel))
-    wakechan=client.get_channel(id=int(wake_channel))
-    await botchan.send("Bot logged in!")
-    starttime=datetime.datetime.now()
-    if compmode:
-        await botchan.send("Bot is running in compatability mode. Some commands may not work.")
-    if cversion!=sversion:
-        await botchan.send(f"The bot has been updated to version {cversion} from {sversion}! (in some cases the settings.json has to be recreated)")
-        settings["version"]=cversion
-    quote=last_known_quote
-    print("Bot logged in!")
-    savesettings()
+    if updatemode:
+        global botchan, wakechan,bot_channel
+        botchan=client.get_channel(id=int(bot_channel))
+        botchan.send("The bot has been started in update mode. Please provide a valid settings.json file. (!restore)")
+    else:
+        global botchan, wakechan,bot_channel, wake_channel,sversion,quote,starttime
+        botchan=client.get_channel(id=int(bot_channel))
+        wakechan=client.get_channel(id=int(wake_channel))
+        await botchan.send("Bot logged in!")
+        starttime=datetime.datetime.now()
+        if compmode:
+            await botchan.send("Bot is running in compatability mode. Some commands may not work.")
+        if cversion!=sversion:
+            await botchan.send(f"The bot has been updated to version {cversion} from {sversion}! (in some cases the settings.json has to be recreated)")
+            settings["version"]=cversion
+        quote=last_known_quote
+        print("Bot logged in!")
+        savesettings()
 
 async def quotesend():#this is the function which sends the quote at the right time
     await client.wait_until_ready()
@@ -109,6 +123,14 @@ commands=["help","quote","settime","send","exit","reminder","cancel","reboot","b
 async def on_message(message):
     global settings,sendtime, cancel,default_quotes, sendnow,starttime
     if message.author==client.user:
+        return
+    if updatemode:
+        if command("restore",message,1):#restores the settings.json file from the bot channel
+            await botchan.send("Restoring backup...")
+            settings=requests.get(message.attachments[0].url).json()
+            savesettings()
+            loadsettings()
+            await botchan.send("Backup restored. Please restart the bot to exit update mode.")
         return
     if command("help",message):
         out="```"
