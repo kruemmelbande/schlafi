@@ -99,7 +99,7 @@ async def on_ready():
         if compmode:
             await botchan.send("Bot is running in compatability mode. Some commands may not work.")
         if cversion!=sversion:
-            await botchan.send(f"The bot has been updated to version {cversion} from {sversion}! (in some cases the settings.json has to be recreated)")
+            await botchan.send(f"The bot has been updated to version {cversion} from {sversion}!")
             settings["version"]=cversion
         quote=last_known_quote
         print("Bot logged in!")
