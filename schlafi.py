@@ -97,7 +97,7 @@ async def on_ready():
 commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
 @client.event
 async def on_message(message):
-    global settings,sendtime, cancel,default_quotes
+    global settings,sendtime, cancel,default_quotes, sendnow
     if message.author==client.user:
         return
     msg=message.content
