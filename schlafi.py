@@ -3,9 +3,10 @@ import discord, json, random, time, datetime, os, asyncio,requests
 compmode=0
 try:
     import psutil
+    from gpiozero import CPUTemperature
 except:
     compmode=1
-from gpiozero import CPUTemperature
+
 #test uwu
 client=discord.Client()
 # load settings
