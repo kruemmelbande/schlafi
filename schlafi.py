@@ -70,7 +70,10 @@ def loadsettings():
 
 def savesettings():
     global settings, quote
-    settings["last-known-quote"]=quote
+    try:
+        settings["last-known-quote"]=quote
+    except:
+        settings["last-known-quote"]="Quote not found"
     with open('settings.json', 'w') as fp:
         json.dump(settings, fp)
         print("settings.json saved")
@@ -86,7 +89,7 @@ async def on_ready():
     if updatemode:
         
         botchan=client.get_channel(id=int(bot_channel))
-        botchan.send("The bot has been started in update mode. Please provide a valid settings.json file. (!restore)")
+        await botchan.send("The bot has been started in update mode. Please provide a valid settings.json file. (!restore)")
     else:
         global wakechan, wake_channel,sversion,quote,starttime
         botchan=client.get_channel(id=int(bot_channel))
