@@ -79,12 +79,13 @@ sendtime=default_wake.split(":")
 
 @client.event
 async def on_ready():
+    global botchan,bot_channel,updatemode,bot_channel
     if updatemode:
-        global botchan, wakechan,bot_channel
+        
         botchan=client.get_channel(id=int(bot_channel))
         botchan.send("The bot has been started in update mode. Please provide a valid settings.json file. (!restore)")
     else:
-        global botchan, wakechan,bot_channel, wake_channel,sversion,quote,starttime
+        global wakechan, wake_channel,sversion,quote,starttime
         botchan=client.get_channel(id=int(bot_channel))
         wakechan=client.get_channel(id=int(wake_channel))
         await botchan.send("Bot logged in!")
