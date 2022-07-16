@@ -1,8 +1,7 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
-from cv2 import cubeRoot
 import discord, json, random, time, datetime, os, asyncio,requests
 compmode=0
-cversion=1.1
+cversion=1.2
 try:
     import psutil
     from gpiozero import CPUTemperature
