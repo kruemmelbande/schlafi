@@ -81,7 +81,7 @@ def savesettings():
         #print(settings)
 sendnow=0
 loadsettings()
-if not updatemode
+if not updatemode:
     if cucom:
         try:
             from custom import on_rdy, on_msg
