@@ -81,13 +81,14 @@ def savesettings():
         #print(settings)
 sendnow=0
 loadsettings()
-if cucom:
-    try:
-        from custom import on_rdy, on_msg
-    except:
-        print("custom commands not found")
-        cucom=0
-        pass
+if not updatemode
+    if cucom:
+        try:
+            from custom import on_rdy, on_msg
+        except:
+            print("custom commands not found")
+            cucom=0
+            pass
 sendtime=default_wake.split(":")
 
 @client.event
