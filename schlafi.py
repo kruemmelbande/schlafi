@@ -8,9 +8,6 @@ try:
 except:
     compmode=1
 
-cucom=0 # enable if you want to use the custom commands
-
-
 #test uwu
 client=discord.Client()
 # load settings
