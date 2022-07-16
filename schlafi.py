@@ -136,7 +136,7 @@ async def quotesend():#this is the function which sends the quote at the right t
 
 
 
-commands=["help","quote","settime","send","exit","reminder","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
+commands=["help","quote","settime","send","exit","reminder (!reminder hh:mm:text)","cancel","reboot","bash","backup","restore","addquote","listquotes","removequote","gethwinfo","addnote","removenote","getnote"]
 @client.event
 async def on_message(message):
     global settings,sendtime, cancel,default_quotes, sendnow,starttime
