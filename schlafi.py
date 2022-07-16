@@ -1,4 +1,5 @@
 #this is a discord bot which besides having varíous commands, can send a custom message to a channel at a certain time
+from cv2 import cubeRoot
 import discord, json, random, time, datetime, os, asyncio,requests
 compmode=0
 cversion=1.1
@@ -13,7 +14,7 @@ client=discord.Client()
 # load settings
 
 def getsettings(fp):
-    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, settings, sversion, last_known_quote
+    global token, prefix, default_quotes, bot_channel, update_pending, default_wake, wake_channel, settings, sversion, last_known_quote, cucom
     settings = json.load(fp)
     token = settings["token"]
     prefix = settings["prefix"]
@@ -24,6 +25,7 @@ def getsettings(fp):
     wake_channel = settings["wake-channel"]
     sversion=settings["version"]
     last_known_quote=settings["last-known-quote"]
+    cucom=settings["custom-commands"]
     print("The bot has been started at "+str(datetime.datetime.now()))
     print("--settings--")
     print(settings)
@@ -80,7 +82,13 @@ def savesettings():
         #print(settings)
 sendnow=0
 loadsettings()
-
+if cucom:
+    try:
+        from custom import on_rdy, on_msg
+    except:
+        print("custom commands not found")
+        cucom=0
+        pass
 sendtime=default_wake.split(":")
 
 @client.event
@@ -104,6 +112,9 @@ async def on_ready():
         quote=last_known_quote
         print("Bot logged in!")
         savesettings()
+        if cucom:
+            on_rdy()
+
 
 async def quotesend():#this is the function which sends the quote at the right time
     await client.wait_until_ready()
@@ -292,6 +303,8 @@ async def on_message(message):
         out+="Wake channel: "+str(wake_channel)+"\n"
         out+="```"
         await botchan.send(out)
+    if cucom:
+        on_msg(message, botchan, wakechan, prefix, settings)
 if not updatemode:
     client.loop.create_task(quotesend())
 client.run(token)
