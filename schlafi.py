@@ -165,6 +165,7 @@ async def on_message(message):
         global quote
         quote=postcommand
         await botchan.send(message.content+" | Quote set to: "+quote)
+        savesettings()
 #        await message.delete()
     if command("settime",message):
         global sendtime
@@ -303,6 +304,8 @@ async def on_message(message):
         out+="Wake channel: "+str(wake_channel)+"\n"
         out+="```"
         await botchan.send(out)
+    if command("curquote",message,1):
+        await botchan.send("Current quote: "+quote)
     if cucom:
         on_msg(message, botchan, wakechan, prefix, settings)
 if not updatemode:
